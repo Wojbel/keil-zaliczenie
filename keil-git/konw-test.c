@@ -1,64 +1,52 @@
-#include <string.h>
-#include <LPC21xx.H>
+#include <LPC21xx.h>
+#define NULL 0
 
-#define NULL '\0'
+enum Result {ERROR, OK};
 
-enum Result {OK, ERROR};
+enum Result eHexStringToUInt(char pcHexStr[], unsigned int *puiValue){
 
-char g_szInputString[20] = "0xBBBBB"; 
-
-volatile unsigned char g_ucRunTestFlag = 0;   
-
-unsigned int g_uiParsedValue;        
-enum Result g_eStatus;               
-
-
-enum Result eHexStringToUInt(char pcStr[], unsigned int *puiValue)
-{
-    unsigned char ucCharacterCounter;
-    unsigned char ucCurrentCharacter;
+    unsigned char ucHexDigitIndex;
+    unsigned char ucHexDigit;
 
     *puiValue = 0;
-    if((pcStr[0] != '0') || (pcStr[1] != 'x') || (pcStr[2] == NULL))
-    {
+
+    if((pcHexStr[0] != '0') || (pcHexStr[1] != 'x') || (pcHexStr[2] == NULL)){
         return ERROR;
     }
-    for(ucCharacterCounter = 2; pcStr[ucCharacterCounter] != NULL ; ucCharacterCounter++)
-    {
-        ucCurrentCharacter = pcStr[ucCharacterCounter];
-        if (ucCharacterCounter == 6)
-        {
+
+    for(ucHexDigitIndex = 2; pcHexStr[ucHexDigitIndex] != NULL; ucHexDigitIndex++){
+
+        if(ucHexDigitIndex == 6){
             return ERROR;
         }
+
+        ucHexDigit = pcHexStr[ucHexDigitIndex];
+
         *puiValue = *puiValue << 4;
-        if((ucCurrentCharacter <= '9') && (ucCurrentCharacter >= '0'))
-        {
-            *puiValue = (*puiValue) | (ucCurrentCharacter - '0');
+
+        if((ucHexDigit >= '0') && (ucHexDigit <= '9')){
+            *puiValue = *puiValue | (ucHexDigit - '0');
         }
-        else if((ucCurrentCharacter <= 'F') && (ucCurrentCharacter >= 'A'))
-        {
-            *puiValue = (*puiValue) | (ucCurrentCharacter - 'A' + 10);
+        else if((ucHexDigit >= 'A') && (ucHexDigit <= 'F')){
+            *puiValue = *puiValue | (ucHexDigit - 'A' + 10);
         }
-        else
-        {
+        else{
             return ERROR;
         }
     }
+
     return OK;
 }
 
-int main(void)
-{
-    g_eStatus = eHexStringToUInt(g_szInputString, &g_uiParsedValue);
+unsigned int testValue1, testValue2;
+enum Result testResult1, testResult2;
 
-    while(1) 
-    {
-  
-        if (g_ucRunTestFlag == 1)
-        {
-            g_eStatus = eHexStringToUInt(g_szInputString, &g_uiParsedValue);
-            
-            g_ucRunTestFlag = 0; 
-        }
-    }
+int main(void) {
+
+	testResult1 = eHexStringToUInt("0x1A3F", &testValue1);
+    testResult2 = eHexStringToUInt("0x1G3F", &testValue2);
+	
+
+    while(1);
 }
+'test'
